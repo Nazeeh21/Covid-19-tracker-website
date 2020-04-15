@@ -60,28 +60,6 @@ app.post("/country", function(req, res) {
 app.get("/world-wide", function(req, res) {
     res.redirect("/")
 })
-// app.get("/", function(req, res) {
-
-//     var url = "https://covid19.mathdro.id/api"
-//     https.get(url, function(response) {
-//         console.log(response.statusCode)
-        
-//         response.on("data" , function(data) {
-//             const casesData = JSON.parse(data)
-//             const casesConfirmed = casesData.confirmed.value
-//             const casesRecovered = casesData.recovered.value
-//             const casesDeath = casesData.deaths.value
-
-//             res.write("<p>Confimed Cases across the world is " + casesConfirmed + "</p>")
-//             res.write("<p>Recovered Cases across the world is " + casesRecovered + "</p>")
-//             res.write("<p>Death Cases across the world is " + casesDeath + "</p>")
-//             res.send()
-            
-//         })
-//     })
-
-//     // res.send("Server is started")
-// })
 
 app.listen(3000, function() {
     console.log("Serer started at port 3000")
