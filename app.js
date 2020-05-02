@@ -1,88 +1,55 @@
 const express = require('express')
-const https = require('https')
 const bodyParser = require('body-parser')
-
+const https = require('https')
+const ejs = require('ejs')
+const _ = require('lodash')
 const app = express()
+
 app.use(bodyParser.urlencoded({extended: true}))
+app.set('view engine', 'ejs')
 
-app.get("/", function (req, res) {
-    res.sendFile(__dirname + "/index.html")
-})
-
-app.post("/world-wide", function(req, res) {
+app.get("/", function(req, res) {
     const url = "https://covid19.mathdro.id/api"
+
     https.get(url, function(response) {
         console.log(response.statusCode)
 
         response.on("data", function(data) {
             const JSONdata = JSON.parse(data)
-            const cases = JSONdata.confirmed.value
+            const confirmed = JSONdata.confirmed.value
             const recovered = JSONdata.recovered.value
-            const deaths = JSONdata.deaths.value
+            const death = JSONdata.deaths.value
 
-            res.write("<p><h2>Data of COVID-19 across the world!</h2></p>")
-            res.write("<p>Cases: " + cases + "</p>")
-            res.write("<p>Recovered: " + recovered + "</p>")
-            res.write("<p>Deaths: " + deaths + "</p>")
-            res.send()
+            res.render('home', {confirmed: confirmed, recovered: recovered, deaths: death})
         })
     })
 })
 
-app.post("/country", function(req, res) {
-    const country = req.body.countryName
-    console.log(country)
-    
+app.post("/", function(req, res) {
+    const countryName = req.body.country
+    res.redirect("/country/" + countryName)
+})
+
+app.get("/country/:country", function(req, res) {
+    const country = req.params.country
+
     const url = "https://covid19.mathdro.id/api/countries/" + country
 
     https.get(url, function(response) {
         console.log(response.statusCode)
-        if(response.statusCode === 200) {
-            response.on("data", function(data) {
-                const JSONdata = JSON.parse(data)
-                const cases = JSONdata.confirmed.value
-                const recovered = JSONdata.recovered.value
-                const deaths = JSONdata.deaths.value
-    
-                res.write("<p><h2>Data of COVID-19 of " + country + " country</h2></p>")
-                res.write("<p>Cases: " + cases + "</p>")
-                res.write("<p>Recovered: " + recovered + "</p>")
-                res.write("<p>Deaths: " + deaths + "</p>")
-                res.send()
-            })    
-        } else {
-            res.write("<p><h3>OOps! something wrnt wrong try after some time</h3></p>")
-            res.send()
-        }        
+
+        response.on("data", function(data) {
+            const JSONdata = JSON.parse(data)
+            const confirmed = JSONdata.confirmed.value
+            const recovered = JSONdata.recovered.value
+            const death = JSONdata.deaths.value
+
+            res.render('country', {countryName: country, confirmed: confirmed, recovered: recovered, deaths: death})
+        })
     })
+
 })
-
-app.get("/world-wide", function(req, res) {
-    res.redirect("/")
-})
-// app.get("/", function(req, res) {
-
-//     var url = "https://covid19.mathdro.id/api"
-//     https.get(url, function(response) {
-//         console.log(response.statusCode)
-        
-//         response.on("data" , function(data) {
-//             const casesData = JSON.parse(data)
-//             const casesConfirmed = casesData.confirmed.value
-//             const casesRecovered = casesData.recovered.value
-//             const casesDeath = casesData.deaths.value
-
-//             res.write("<p>Confimed Cases across the world is " + casesConfirmed + "</p>")
-//             res.write("<p>Recovered Cases across the world is " + casesRecovered + "</p>")
-//             res.write("<p>Death Cases across the world is " + casesDeath + "</p>")
-//             res.send()
-            
-//         })
-//     })
-
-//     // res.send("Server is started")
-// })
 
 app.listen(3000, function() {
-    console.log("Serer started at port 3000")
+    console.log("Server started on port 3000")
 })

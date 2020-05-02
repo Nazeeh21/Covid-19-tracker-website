@@ -1,2 +1,4 @@
 const url = "https://covid19.mathdro.id/api"
 const url = "https://covid19.mathdro.id/api/countries/" + country
+
+node_modules
